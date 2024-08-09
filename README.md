@@ -16,7 +16,8 @@ JOIN
 WHERE 
     f.status = 'pending';
 
-    ![image](https://github.com/user-attachments/assets/ba6cf035-4a9e-45c3-b886-e55dfb656baa)
+   ![image](https://github.com/user-attachments/assets/a7d5a0a1-5391-4a73-a18f-ed865863ce8b)
+
 
 ii)
 SELECT d.department_name, COUNT(s.student_id) AS student_count
