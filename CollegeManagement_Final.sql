@@ -1,74 +1,144 @@
--- drop database college_5;
-CREATE DATABASE college_6;
-USE college_6;
+-- drop database college_9;
+CREATE DATABASE college_9;
+USE college_9;
 
--- department
+-- Departments
 CREATE TABLE Departments (
-    department_id INT PRIMARY KEY,
-    department_name VARCHAR(100)
+    department_id INT PRIMARY KEY AUTO_INCREMENT,
+    department_name VARCHAR(100) NOT NULL
 );
 
--- students 
+-- Hostels
+CREATE TABLE Hostels (
+    hostel_id INT PRIMARY KEY AUTO_INCREMENT,
+    hostel_name VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    capacity INT NOT NULL
+);
+
+-- Courses
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(100) NOT NULL,
+    department_id INT,
+    credits INT,
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id)
+);
+
+-- Students
 CREATE TABLE Students (
-    student_id INT PRIMARY KEY,
-    first_name VARCHAR(50),
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50),
     date_of_birth DATE,
     gender VARCHAR(10),
-    email VARCHAR(100),
-    phone_number VARCHAR(15),
+    email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(15) UNIQUE,
     address TEXT,
-    department_id INT 
+    department_id INT,
+    hostel_id INT,
+    course_id INT,
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id),
+    FOREIGN KEY (hostel_id) REFERENCES Hostels(hostel_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
 );
 
---  faculty 
+-- Faculty
 CREATE TABLE Faculty (
-    faculty_id INT PRIMARY KEY,
-    first_name VARCHAR(50),
+    faculty_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50),
-    email VARCHAR(100),
-    phone_number VARCHAR(15),
-    department_id INT  
+    email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(15) UNIQUE,
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id)
 );
 
--- fees
+-- Fees
 CREATE TABLE Fees (
-    fee_id INT PRIMARY KEY,
-    student_id INT,  
-    amount DECIMAL(10, 2),
+    fee_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    amount DECIMAL(10, 2) NOT NULL,
     due_date DATE,
     status VARCHAR(20),
-    payment_date DATE
+    payment_date DATE,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
 );
 
--- books
+-- Books
 CREATE TABLE Books (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(100),
+    book_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
     author VARCHAR(100),
     publisher VARCHAR(100),
     year_of_publication YEAR
 );
 
--- library
+-- Library
 CREATE TABLE Library (
-    library_id INT PRIMARY KEY,
-    student_id INT, 
-    book_id INT,  
+    library_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    book_id INT,
     issue_date DATE,
     return_date DATE,
-    status VARCHAR(20)
+    status VARCHAR(20),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
 
--- gatepass
+-- Gatepass
 CREATE TABLE Gatepass (
-    gatepass_id INT PRIMARY KEY,
-    student_id INT,  
+    gatepass_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
     reason TEXT,
     issue_date DATE,
     return_date DATE,
-    status VARCHAR(20)
+    status VARCHAR(20),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
 );
+
+-- Rooms
+CREATE TABLE Rooms (
+    room_id INT PRIMARY KEY AUTO_INCREMENT,
+    hostel_id INT,
+    room_number VARCHAR(10) NOT NULL,
+    capacity INT,
+    current_occupants INT,
+    FOREIGN KEY (hostel_id) REFERENCES Hostels(hostel_id)
+);
+
+-- Driver
+CREATE TABLE Driver (
+    driver_id INT PRIMARY KEY AUTO_INCREMENT,
+    driver_name VARCHAR(100) NOT NULL,
+    license_number VARCHAR(50),
+    contact_number VARCHAR(15),
+    experience_years INT
+);
+
+-- Transport
+CREATE TABLE Transport (
+    transport_id INT PRIMARY KEY AUTO_INCREMENT,
+    vehicle_type VARCHAR(50),
+    vehicle_number VARCHAR(50) UNIQUE,
+    driver_id INT,
+    capacity INT,
+    route_name VARCHAR(255),
+    FOREIGN KEY (driver_id) REFERENCES Driver(driver_id)
+);
+
+-- hostel
+INSERT INTO Hostels (hostel_id, hostel_name, location, capacity) VALUES
+(1, 'Boys Hostel A', 'North Campus', 100),
+(2, 'Girls Hostel A', 'South Campus', 120),
+(3, 'Boys Hostel B', 'West Campus', 80),
+(4, 'Girls Hostel B', 'East Campus', 100),
+(5, 'Boys Hostel C', 'Central Campus', 150),
+(6, 'Girls Hostel C', 'North Campus', 110),
+(7, 'Boys Hostel D', 'South Campus', 90),
+(8, 'Girls Hostel D', 'West Campus', 95),
+(9, 'Boys Hostel E', 'East Campus', 85),
+(10, 'Girls Hostel E', 'Central Campus', 130);
 
 -- department
 INSERT INTO Departments (department_id, department_name)
@@ -77,40 +147,32 @@ VALUES
 (2, 'IT'),   
 (3, 'AI&DS');
 
+-- courses
+INSERT INTO Courses (course_id, course_name, department_id, credits) VALUES
+(1, 'Computer Science Engineering', 1, 4),
+(2, 'Artificial Intelligence and Data Science', 1, 3),
+(3, 'Information Technology', 1, 4),
+(4, 'Data Structures and Algorithms', 1, 3),
+(5, 'Machine Learning', 1, 3),
+(6, 'Database Management Systems', 1, 4),
+(7, 'Operating Systems', 1, 3),
+(8, 'Web Development', 1, 3),
+(9, 'Network Security', 1, 4),
+(10, 'Cloud Computing', 1, 4);
+
 -- student
-INSERT INTO Students (student_id, first_name, last_name, date_of_birth, gender, email, phone_number, address, department_id)
+INSERT INTO Students (student_id, first_name, last_name, date_of_birth, gender, email, phone_number, address, department_id, hostel_id, course_id)
 VALUES
-(1, 'Mohan', 'Das', '2003-01-15', 'Male', 'mohan.das@example.com', '9876543222', 'Address 1', 1),
-(2, 'Lavanya', 'S', '2004-11-01', 'Female', 'lavanya.s@example.com', '9876543221', 'Address 2', 2),
-(3, 'Radha', 'Krishnan', '2004-01-20', 'Female', 'radha.krishnan@example.com', '9876543227', 'Address 3', 3),
-(4, 'Charan', 'R', '2003-07-29', 'Male', 'charan.r@example.com', '9876543238', 'Address 4', 1),
-(5, 'Deepak', 'Raja', '2004-10-01', 'Male', 'deepak.raja@example.com', '9876543213', 'Address 5', 2),
-(6, 'Bhavani', 'Devi', '2004-11-23', 'Female', 'bhavani.devi@example.com', '9876543237', 'Address 6', 3),
-(7, 'Arun', 'Kumar', '2003-05-14', 'Male', 'arun.kumar@example.com', '9876543210', 'Address 7', 1),
-(8, 'Nirmala', 'Devi', '2004-06-25', 'Female', 'nirmala.devi@example.com', '9876543223', 'Address 8', 2),
-(9, 'Ilavarasan', 'V', '2003-02-14', 'Male', 'ilavarasan.v@example.com', '9876543218', 'Address 9', 3),
-(10, 'Bala', 'Murugan', '2004-07-22', 'Male', 'bala.murugan@example.com', '9876543211', 'Address 10', 1),
-(11, 'Jaya', 'Lakshmi', '2004-03-30', 'Female', 'jaya.lakshmi@example.com', '9876543219', 'Address 11', 2),
-(12, 'Karthik', 'Raja', '2003-06-10', 'Male', 'karthik.raja@example.com', '9876543220', 'Address 12', 3),
-(13, 'Suresh', 'Kumar', '2003-12-01', 'Male', 'suresh.kumar@example.com', '9876543228', 'Address 13', 1),
-(14, 'Ezhil', 'Arasan', '2003-11-15', 'Male', 'ezhil.arasan@example.com', '9876543214', 'Address 14', 2),
-(15, 'Fathima', 'Beevi', '2004-12-12', 'Female', 'fathima.beevi@example.com', '9876543215', 'Address 15', 3),
-(16, 'Oviya', 'S', '2003-09-09', 'Female', 'oviya.s@example.com', '9876543224', 'Address 16', 1),
-(17, 'Prakash', 'Raj', '2004-05-19', 'Male', 'prakash.raj@example.com', '9876543225', 'Address 17', 2),
-(18, 'Chitra', 'Lakshmi', '2003-03-09', 'Female', 'chitra.lakshmi@example.com', '9876543212', 'Address 18', 3),
-(19, 'Tamizh', 'Selvan', '2004-08-08', 'Male', 'tamizh.selvan@example.com', '9876543229', 'Address 19', 1),
-(20, 'Gokul', 'Nath', '2003-04-27', 'Male', 'gokul.nath@example.com', '9876543216', 'Address 20', 2),
-(21, 'Uma', 'Maheswari', '2003-04-11', 'Female', 'uma.maheswari@example.com', '9876543230', 'Address 21', 3),
-(22, 'Vijay', 'Kumar', '2004-07-27', 'Male', 'vijay.kumar@example.com', '9876543231', 'Address 22', 1),
-(23, 'Kavi', 'S', '2003-07-13', 'Male', 'kavi.s@example.com', '9876543226', 'Address 23', 2),
-(24, 'John', 'S', '2004-10-14', 'Male', 'john.s@example.com', '9876543233', 'Address 24', 3),
-(25, 'kavi', 'Raj', '2003-06-30', 'Male', 'kavi.raj@example.com', '9876543232', 'Address 25', 1),
-(26, 'Divya', 'Bharathi', '2004-01-06', 'Female', 'divya.bharathi@example.com', '9876543239', 'Address 26', 2),
-(27, 'Eswari', 'M', '2003-08-15', 'Female', 'eswari.m@example.com', '9876543240', 'Address 27', 3),
-(28, 'Sharuk', 'Khan', '2004-09-10', 'Male', 'feroz.khan@example.com', '9876543241', 'Address 28', 1),
-(29, 'Jay', 'Vijayan', '2004-08-29', 'Male', 'jay.vijayan@example.com', '9876543245', 'Address 29', 2),
-(30, 'Lakshman', 'Kumar', '2004-12-17', 'Male', 'lakshman.kumar@example.com', '9876543247', 'Address 30', 3),
-(31, 'Ram', 'Kumar', '2004-12-17', 'Male', 'ram.kumar@example.com', '9876543247', 'Address 31', 1);
+(1, 'Mohan', 'Das', '2003-01-15', 'Male', 'mohan.das@example.com', '9876543222', 'Address 1', 1, 1, 1),
+(2, 'Lavanya', 'S', '2004-11-01', 'Female', 'lavanya.s@example.com', '9876543221', 'Address 2', 2, 1, 1),
+(3, 'Radha', 'Krishnan', '2004-01-20', 'Female', 'radha.krishnan@example.com', '9876543227', 'Address 3', 3, 2, 2),
+(4, 'Charan', 'R', '2003-07-29', 'Male', 'charan.r@example.com', '9876543238', 'Address 4', 1, 2, 2),
+(5, 'Deepak', 'Raja', '2004-10-01', 'Male', 'deepak.raja@example.com', '9876543213', 'Address 5', 2, 3, 3),
+(6, 'Bhavani', 'Devi', '2004-11-23', 'Female', 'bhavani.devi@example.com', '9876543237', 'Address 6', 3, 3, 3),
+(7, 'Arun', 'Kumar', '2003-05-14', 'Male', 'arun.kumar@example.com', '9876543210', 'Address 7', 1, 1, 1),
+(8, 'Nirmala', 'Devi', '2004-06-25', 'Female', 'nirmala.devi@example.com', '9876543223', 'Address 8', 2, 1, 1),
+(9, 'Ilavarasan', 'V', '2003-02-14', 'Male', 'ilavarasan.v@example.com', '9876543218', 'Address 9', 3, 2, 2),
+(10, 'Bala', 'Murugan', '2004-07-22', 'Male', 'bala.murugan@example.com', '9876543211', 'Address 10', 1, 2, 2);
 
 -- faculty
 INSERT INTO Faculty (faculty_id, first_name, last_name, email, phone_number, department_id)
@@ -139,27 +201,8 @@ VALUES
 (7, 7, 1550.00, '2024-07-14', 'Pending', NULL),
 (8, 8, 1650.00, '2024-06-25', 'Paid', '2024-06-20'),
 (9, 9, 1750.00, '2024-03-14', 'Pending', NULL),
-(10, 10, 1850.00, '2024-07-22', 'Paid', '2024-07-21'),                                   
-(11, 11, 1900.00, '2024-05-30', 'Pending', NULL),
-(12, 12, 1700.00, '2024-06-10', 'Paid', '2024-06-08'),
-(13, 13, 1550.00, '2024-08-01', 'Pending', NULL),
-(14, 14, 1750.00, '2024-11-15', 'Pending', NULL),
-(15, 15, 1650.00, '2024-12-12','Paid', '2024-11-10'),
-(16, 16, 1800.00, '2024-03-09', 'Paid', '2024-03-08'),
-(17, 17, 1900.00, '2024-05-19',  'Paid', '2024-07-21'),
-(18, 18, 1600.00, '2024-03-09', 'Paid', '2024-03-07'),
-(19, 19, 1500.00, '2024-08-08',  'Paid', '2024-07-21'),
-(20, 20, 1700.00, '2024-09-01', 'Paid', '2024-08-30'),
-(21, 21, 1850.00, '2024-04-11', 'Pending', NULL),
-(22, 22, 2000.00, '2024-06-27', 'Paid', '2024-06-26'),
-(23, 23, 1600.00, '2024-02-13', 'Pending', NULL),
-(24, 24, 1750.00, '2024-10-14', 'Paid', '2024-10-12'),
-(25, 25, 1500.00, '2024-06-30', 'Pending', NULL),
-(26, 26, 1800.00, '2024-04-01', 'Pending', NULL),
-(27, 27, 1700.00, '2024-08-15', 'Pending', NULL),
-(28, 28, 1850.00, '2024-05-10', 'Pending', NULL),
-(29, 29, 1550.00, '2024-07-27', 'Pending', NULL),
-(30, 30, 1900.00, '2024-12-17', 'Paid', '2024-12-16');
+(10, 10, 1850.00, '2024-07-22', 'Paid', '2024-07-21');                                   
+
 
 -- book 
 INSERT INTO Books (book_id, title, author, publisher, year_of_publication)
@@ -205,58 +248,89 @@ VALUES
 (10, 10, 'Urgent Work', '2024-07-29', '2024-07-29', 'Approved');
 
 
-SELECT 
-    s.student_id, 
-    s.first_name, 
-    s.last_name, 
-    s.department_id, 
-    f.fee_id, 
-    f.amount, 
-    f.due_date, 
-    f.status
-FROM 
-    Fees f
-JOIN 
-    Students s ON f.student_id = s.student_id
-WHERE 
-    f.status = 'pending';
-    
-SELECT d.department_name, COUNT(s.student_id) AS student_count
-FROM Departments d
-LEFT JOIN Students s ON d.department_id = s.department_id
-GROUP BY d.department_name;
 
-SELECT 
-    s.student_id, 
-    s.first_name, 
-    s.last_name, 
-    d.department_name
-FROM 
-    Students s
-JOIN 
-    Departments d ON s.department_id = d.department_id limit 31;
-    
+
+-- rooms
+INSERT INTO Rooms (room_id, hostel_id, room_number, capacity, current_occupants) VALUES
+(1, 1, '101', 4, 4),
+(2, 1, '102', 4, 3),
+(3, 2, '201', 4, 4),
+(4, 2, '202', 4, 2),
+(5, 3, '301', 4, 4),
+(6, 3, '302', 4, 4),
+(7, 4, '401', 4, 3),
+(8, 4, '402', 4, 2),
+(9, 5, '501', 4, 4),
+(10, 5, '502', 4, 4);
+
+
+-- driver
+INSERT INTO Driver (driver_id, driver_name, license_number, contact_number, experience_years) VALUES
+(1, 'Murugan', 'TN-12345-67890', '9876543210', 10),
+(2, 'Kannan', 'TN-23456-78901', '8765432109', 8),
+(3, 'Venkatesan', 'TN-34567-89012', '7654321098', 12),
+(4, 'Raja', 'TN-45678-90123', '6543210987', 15),
+(5, 'Marimuthu', 'TN-56789-01234', '5432109876', 7),
+(6, 'Kumarasamy', 'TN-67890-12345', '4321098765', 9),
+(7, 'Perumal', 'TN-78901-23456', '3210987654', 11),
+(8, 'Manickam', 'TN-89012-34567', '2109876543', 13),
+(9, 'Subramanian', 'TN-90123-45678', '1098765432', 14),
+(10, 'Aravind', 'TN-01234-56789', '0987654321', 6);
+
+-- transport
+INSERT INTO Transport (transport_id, vehicle_type, vehicle_number, driver_id, capacity, route_name) VALUES
+(1, 'Bus', 'TN01AB1234', 1, 50, 'Sankari - Tiruchengode '),
+(2, 'Bus', 'TN02CD5678', 2, 50, 'Sankari - Erode'),
+(3, 'Van', 'TN03EF9101', 3, 15, 'Sankari - perundurai'),
+(4, 'Bus', 'TN04GH2345', 4, 50, 'Sankari -  Rasipuram'),
+(5, 'Bus', 'TN05IJ6789', 5, 50, 'Sankari - Bhavani'),
+(6, 'Van', 'TN06KL1011', 6, 15, 'Sankari -  Komarapalayam'),
+(7, 'Bus', 'TN07MN1213', 7, 50, 'Sankari -  Pallipalayam'),
+(8, 'Bus', 'TN08OP1415', 8, 50, 'Sankari -  Anthiyur'),
+(9, 'Van', 'TN09QR1617', 9, 15, 'Sankari - Kodumudi'),
+(10, 'Bus', 'TN10ST1819', 10, 50, 'Sankari - Namakkal');
+
+
 SELECT 
     Students.student_id,
     Students.first_name,
     Students.last_name,
-    Library.library_id,
-    Library.issue_date,
-    Library.return_date,
-    Library.status,
-    Books.title,
-    Books.author,
-    Books.publisher,
-    Books.year_of_publication
+    Students.email,
+    Departments.department_name,
+    Hostels.hostel_name,
+    Courses.course_name,
+    Fees.amount AS fee_amount,
+    Fees.status AS fee_status,
+    Books.title AS book_title,
+    Library.issue_date AS book_issue_date,
+    Library.return_date AS book_return_date,
+    Library.status AS book_status,
+    Gatepass.reason AS gatepass_reason,
+    Gatepass.issue_date AS gatepass_issue_date,
+    Gatepass.return_date AS gatepass_return_date,
+    Gatepass.status AS gatepass_status
 FROM 
     Students
-JOIN 
-    Library ON Students.student_id = Library.student_id
-JOIN 
-    Books ON Library.book_id = Books.book_id
+LEFT JOIN Departments ON Students.department_id = Departments.department_id
+LEFT JOIN Hostels ON Students.hostel_id = Hostels.hostel_id
+LEFT JOIN Courses ON Students.course_id = Courses.course_id
+LEFT JOIN Fees ON Students.student_id = Fees.student_id
+LEFT JOIN Library ON Students.student_id = Library.student_id
+LEFT JOIN Books ON Library.book_id = Books.book_id
+LEFT JOIN Gatepass ON Students.student_id = Gatepass.student_id
+ORDER BY Students.student_id;
 
+SELECT 
+   Transport.transport_id AS TransportNumber,
+   Transport.vehicle_type AS VehicleType,
+   Transport.route_name AS Route,
+   Driver.driver_name AS DriverName
+FROM
+   Transport
+JOIN
+   Driver
+ON 
+   Transport.driver_id = Driver.driver_id
+WHERE 
+   Transport.capacity=50;
 
-
-
-
-    
